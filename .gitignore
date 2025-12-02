@@ -1,6 +1,8 @@
 pdf_images/
-
-
+test_data/
+*.json
+*.txt
+*.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
