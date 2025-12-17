@@ -3,6 +3,8 @@ test_data/
 *.json
 *.txt
 *.csv
+*.jsonl
+*.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
