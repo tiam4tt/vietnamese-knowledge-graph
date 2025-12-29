@@ -5,6 +5,7 @@ test_data/
 *.csv
 *.jsonl
 *.json
+!data/processed/entities_relations.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
