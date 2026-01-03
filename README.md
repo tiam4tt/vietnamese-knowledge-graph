@@ -1,7 +1,17 @@
 # Vietnamese Pharmaceutical Knowledge Graph (VKGPharma)
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-[![Python](https://img.shields.io/badge/Python-3.10+-green.svg)](https://www.python.org/)
+<div align="center">
+
+[![GitHub License](https://img.shields.io/github/license/tiam4tt/vietnamese-knowledge-graph?style=for-the-badge&color=%23a6e3a1)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.11-f9e2af?style=for-the-badge&logo=python&logoColor=%23cdd6f4)](https://www.python.org/)
+![GitHub repo size](https://img.shields.io/github/repo-size/tiam4tt/vietnamese-knowledge-graph?style=for-the-badge&color=%23b4befe)
+
+
+</div>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/catppuccin/catppuccin/main/assets/palette/macchiato.png" width="400" />
+</p>
 
 A natural language question-answering system for Vietnamese pharmaceutical knowledge, built on Neo4j graph database with fine-tuned BartPho model for NLQ-to-Cypher translation.
 
@@ -59,7 +69,7 @@ The system processes questions through a 5-step pipeline:
 
 ## 🛠️ Technology Stack
 
-- **Language**: Python 3.10+
+- **Language**: Python 3.11.14
 - **Database**: Neo4j (graph database)
 - **Web Framework**: Streamlit
 - **Models**:
@@ -70,7 +80,7 @@ The system processes questions through a 5-step pipeline:
 
 ## 📋 Prerequisites
 
-- Python 3.10 or higher
+- Python 3.11.14 or higher
 - Docker (for Neo4j database)
 - Google Gemini API key
 - Minimum 8GB RAM (16GB recommended for optimal performance)
@@ -362,42 +372,79 @@ Thuốc Paracetamol có chứa hoạt chất gì?
 vietnamese-knowledge-graph/
 ├── app.py                          # Main Streamlit application
 ├── requirements.txt                # Python dependencies
+├── Dockerfile                      # Docker image configuration
+├── docker-compose.yml              # Multi-container Docker setup
+├── .dockerignore                   # Docker build exclusions
+├── .env                            # Environment variables (API keys)
+├── .env-example                    # Environment template
 ├── LICENSE                         # Apache 2.0 license
 ├── README.md                       # This file
 ├── data/
-│   ├── neo4j/                     # Neo4j database files (persisted)
-│   ├── processed/                 # Cleaned datasets
-│   │   ├── merged_text_final.txt
-│   │   └── ViKG-NLQ-2-Cypher-data_cleaned.csv
+│   ├── neo4j/                     # Neo4j database files (Docker volume)
+│   │   ├── databases/             # Graph data storage
+│   │   ├── transactions/          # Transaction logs
+│   │   └── server_id              # Database instance ID
+│   ├── processed/                 # Cleaned and processed datasets
+│   │   ├── merged_text_final.txt  # Final merged text
+│   │   ├── merged_text_final.md   # Markdown version
+│   │   ├── merged_text_final_no_breaks.txt
+│   │   ├── entities_relations.json # Extracted entities/relations
+│   │   └── ViKG-NLQ-2-Cypher-data_cleaned.csv  # Training data
 │   ├── raw/                       # Raw extracted data
-│   │   └── graph_documents.json
+│   │   ├── graph_documents.json   # Structured graph data
+│   │   ├── normalized_texts_segmented_final.csv
+│   │   ├── raw_text_extract.csv   # Initial text extraction
+│   │   ├── text_chunks.json       # Chunked text data
+│   │   ├── ViKG-NLQ-2-Cypher.csv  # Original training data
+│   │   └── Duoc-Dien-Viet-Nam-V-tap-2.pdf  # Source document
 │   └── entity_index.pkl           # Entity embedding index (generated)
 ├── models/
-│   └── bartpho-syllable-NLQ2Cypher/  # Fine-tuned NLQ-to-Cypher model
+│   ├── bartpho-syllable-NLQ2Cypher/  # Fine-tuned NLQ-to-Cypher model
+│   │   ├── model.safetensors      # Model weights
+│   │   ├── config.json            # Model configuration
+│   │   ├── tokenizer_config.json  # Tokenizer settings
+│   │   ├── sentencepiece.bpe.model # Tokenizer model
+│   │   └── generation_config.json # Generation parameters
+│   ├── test_predictions.csv       # Model evaluation results
+│   ├── test_results.json          # Test metrics
+│   └── __huggingface_repos__.json # HuggingFace cache info
 ├── notebooks/                      # Data processing pipeline notebooks
 │   ├── extract_text.ipynb         # PDF text extraction
 │   ├── nomalization-with-LLM.ipynb # Text normalization
 │   ├── merge_chunks.ipynb         # Chunk merging
-│   ├── relation_extraction.ipynb  # Entity/relation extraction
+│   ├── get_entities_relations.ipynb # Entity/relation extraction
+│   ├── relation_extraction.ipynb  # Relation processing
 │   ├── build_KG.ipynb            # Graph construction
 │   ├── nlq2cypher-train.ipynb    # Model training
 │   ├── error_analysis.ipynb      # Error analysis
-│   └── query_validate.ipynb      # Query validation
-├── ultils/
+│   ├── query_validate.ipynb      # Query validation
+│   ├── A_gen_prompt.md           # Answer generation prompt
+│   └── Q_gen_prompt.md           # Question generation prompt
+├── utils/
+│   ├── build_KG.py               # Knowledge graph builder
 │   └── build_index.py            # Entity index builder
-└── report/                        # Project documentation
+└── report/
+    └── VKGPharma.pdf             # Project documentation
 ```
 
 ## 🔧 Utilities
 
-### Entity Index Builder
+### Knowledge Graph Builder
 
-[ultils/build_index.py](ultils/build_index.py) extracts all entity names from Neo4j and generates E5 embeddings for entity linking.
+[utils/build_KG.py](utils/build_KG.py) loads graph documents and populates the Neo4j database with entities and relationships.
 
 **Usage:**
 ```bash
-cd ultils
-python build_index.py
+python utils/build_KG.py
+```
+
+### Entity Index Builder
+
+[utils/build_index.py](utils/build_index.py) extracts all entity names from Neo4j and generates E5 embeddings for entity linking.
+
+**Usage:**
+```bash
+python utils/build_index.py
 ```
 
 **Note**: Run this whenever the Neo4j database is updated to refresh the entity index.
