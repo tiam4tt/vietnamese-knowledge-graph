@@ -1,0 +1,39 @@
+services:
+  neo4j:
+    image: neo4j:latest
+    container_name: neo4j-vkgpharma
+    ports:
+      - "7474:7474"  # HTTP
+      - "7687:7687"  # Bolt
+    volumes:
+      - ./data/neo4j:/data
+    environment:
+      - NEO4J_AUTH=none
+    networks:
+      - vkgpharma-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:7474"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: vkgpharma-app
+    ports:
+      - "8501:8501"
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+    environment:
+      - NEO4J_URI=bolt://neo4j:7687
+    depends_on:
+      neo4j:
+        condition: service_healthy
+    networks:
+      - vkgpharma-network
+
+networks:
+  vkgpharma-network:
+    driver: bridge

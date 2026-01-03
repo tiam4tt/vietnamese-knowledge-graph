@@ -1,0 +1,11 @@
+__pycache__/
+notebooks/
+data/neo4j/
+data/processed/
+data/raw/*.csv
+data/raw/*.pdf
+data/raw/*.txt
+report/
+.git/
+models/
+.env.example
